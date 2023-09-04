@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/giganetil/gosms"
 	"github.com/joho/godotenv"
 )
 
@@ -19,7 +20,7 @@ func main() {
 		fmt.Println("AT_APIKEY environment variable not set")
 		os.Exit(1)
 	}
-	atc := NewClient(apiKey)
+	atc := gosms.NewClient(apiKey)
 
 	balance, err := atc.GetBalance()
 	if err != nil {
