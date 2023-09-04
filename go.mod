@@ -1,4 +1,4 @@
-module github.com/gignaetil/gosms
+module github.com/giganetil/gosms
 
 go 1.20
 

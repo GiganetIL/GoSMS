@@ -29,16 +29,33 @@ type SMSProfile struct {
 }
 
 type AccountBalance struct {
-	email Balance
-	sms   Balance
+	Email Balance `json:"email"`
+	Sms   Balance `json:"sms"`
 }
 
 type Balance struct {
-	credits    int
-	percent    float32
-	alert_type string
+	Credits   int     `json:"credits"`
+	Percent   float64 `json:"percent"`
+	AlertType string  `json:"alert_type"`
 }
-
+type SMSSendRequest struct {
+	Details struct {
+		UnsubscribeText     string `json:"unsubscribe_text"`
+		CanUnsubscribe      bool   `json:"can_unsubscribe"`
+		Name                string `json:"name"`
+		FromName            string `json:"from_name"`
+		SmsSendingProfileID int    `json:"sms_sending_profile_id"`
+		Content             string `json:"content"`
+	} `json:"details"`
+	Scheduling struct {
+		SendNow          bool   `json:"send_now"`
+		ScheduledDateUtc string `json:"scheduled_date_utc"`
+	} `json:"scheduling"`
+	Mobiles []MobileContact `json:"mobiles"`
+}
+type MobileContact struct {
+	PhoneNumber string `json:"phone_number"`
+}
 type ATClient struct {
 	APIKey  string
 	BaseURL string
@@ -56,7 +73,6 @@ func (c *ATClient) GetBalance() (AccountBalance, error) {
 	if err != nil {
 		return AccountBalance{}, err
 	}
-	fmt.Println(resp)
 	balance := AccountBalance{}
 	err = json.Unmarshal([]byte(resp), &balance)
 	return balance, err
@@ -64,7 +80,6 @@ func (c *ATClient) GetBalance() (AccountBalance, error) {
 
 func (c *ATClient) GetEmailProfiles() ([]EmailProfile, error) {
 	resp, err := c.GET("account/sendingprofiles")
-	fmt.Println(resp)
 	if err != nil {
 		return nil, err
 	}
@@ -118,4 +133,23 @@ func (c *ATClient) POST(url string, data interface{}) (string, error) {
 	}
 	respBody, err := io.ReadAll(resp.Body)
 	return string(respBody), err
+}
+
+func (c *ATClient) SendSMS(fromName, toNumber, content string) (int32, error) {
+	profiles, err := c.GetSMSProfiles()
+	if err != nil {
+		return 0, err
+	}
+	req := SMSSendRequest{}
+	req.Details.SmsSendingProfileID = profiles[0].Id
+	req.Details.FromName = fromName
+	req.Details.Content = content
+	req.Mobiles = []MobileContact{{PhoneNumber: toNumber}}
+	req.Scheduling.SendNow = true
+	resp, err := c.POST("smscampaign/OperationalMessage", req)
+	if err != nil {
+		return 0, err
+	}
+	fmt.Println(resp)
+	return 0, nil
 }

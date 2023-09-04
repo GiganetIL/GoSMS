@@ -22,12 +22,16 @@ func main() {
 	atc := NewClient(apiKey)
 
 	balance, err := atc.GetBalance()
-
-	fmt.Printf("Email: %d - %f - %s\n", balance.email.credits, balance.email.percent, balance.email.alert_type)
-	fmt.Printf("SMS: %d - %f - %s\n", balance.sms.credits, balance.sms.percent, balance.sms.alert_type)
-
-	os.Exit(0)
-	sms_profiles, err := atc.GetSMSProfiles()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	if balance.Sms.Credits < 10 {
+		fmt.Println("Low balance")
+		os.Exit(1)
+	}
+	atc.SendSMS("Giganet", "0502332060", "Testing Testing 123")
+	/* sms_profiles, err := atc.GetSMSProfiles()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -44,5 +48,5 @@ func main() {
 	fmt.Println("Email Profiles:")
 	for _, profile := range email_profiles {
 		fmt.Printf("%s - %d - %v\n", profile.ProfileName, profile.Id, profile.IsDefault)
-	}
+	} */
 }
