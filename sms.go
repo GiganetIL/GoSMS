@@ -87,6 +87,7 @@ func (c *ATClient) GetEmailProfiles() ([]EmailProfile, error) {
 	err = json.Unmarshal([]byte(resp), &profiles)
 	return profiles, err
 }
+
 func (c *ATClient) GetSMSProfiles() ([]SMSProfile, error) {
 	resp, err := c.GET("account/sms-sendingprofiles")
 	if err != nil {
@@ -113,6 +114,7 @@ func (c *ATClient) GET(url string) (string, error) {
 	respBody, err := io.ReadAll(resp.Body)
 	return string(respBody), err
 }
+
 func (c *ATClient) POST(url string, data interface{}) (string, error) {
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
@@ -146,10 +148,9 @@ func (c *ATClient) SendSMS(fromName, toNumber, content string) (int32, error) {
 	req.Details.Content = content
 	req.Mobiles = []MobileContact{{PhoneNumber: toNumber}}
 	req.Scheduling.SendNow = true
-	resp, err := c.POST("smscampaign/OperationalMessage", req)
+	_, err = c.POST("smscampaign/OperationalMessage", req)
 	if err != nil {
 		return 0, err
 	}
-	fmt.Println(resp)
 	return 0, nil
 }

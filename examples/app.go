@@ -32,22 +32,4 @@ func main() {
 		os.Exit(1)
 	}
 	atc.SendSMS("Giganet", "0502332060", "Testing Testing 123")
-	/* sms_profiles, err := atc.GetSMSProfiles()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	email_profiles, err := atc.GetEmailProfiles()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	fmt.Println("SMS Profiles:")
-	for _, profile := range sms_profiles {
-		fmt.Printf("%s - %d - %v\n", profile.Name, profile.Id, profile.IsDefault)
-	}
-	fmt.Println("Email Profiles:")
-	for _, profile := range email_profiles {
-		fmt.Printf("%s - %d - %v\n", profile.ProfileName, profile.Id, profile.IsDefault)
-	} */
 }
